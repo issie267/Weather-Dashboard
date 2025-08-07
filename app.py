@@ -9,7 +9,7 @@ st.markdown("Get the latest weather updates for any city in the world.")
 
 st.markdown("### 📍 Enter a city to check its weather")
 
-city = st.text_input("Enter a city name: (you may need to add country code eg UK!")
+city = st.text_input("Enter a city name: (you may need to add country code eg UK!)")
 
 if city:
     weather = get_weather(city)
