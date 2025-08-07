@@ -14,4 +14,8 @@ if city:
         st.subheader(f"Weather in {city.title()}")
         st.write(f"**Temperature:** {weather['temperature']}°C")
         st.write(f"**Feels like:** {weather['feels_like']}°C")
-        st.write(f"
+        st.write(f"**Weather:** {weather['description'].title()}")
+        st.write(f"**Humidity:** {weather['humidity']}%")
+        st.write(f"**Wind Speed:** {weather['wind_speed']} m/s")
+    else:
+        st.error("Could not fetch weather data. Please check the city name.")
