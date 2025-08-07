@@ -23,3 +23,5 @@ if city:
         st.write(f"**Wind Speed:** {weather['wind_speed']} m/s")
     else:
         st.error("Could not fetch weather data. Please check the city name.")
+        st.success("Data loaded successfully!")  # After weather fetch
+
