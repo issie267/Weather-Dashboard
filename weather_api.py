@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Replace with your actual API key
+API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your actual API key
 
 def get_weather(city):
     url = (
