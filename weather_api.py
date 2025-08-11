@@ -1,4 +1,4 @@
-"""
+
 import requests
 from datetime import datetime
 
@@ -78,4 +78,4 @@ def get_weather(city):
 
     # Step 2: Get weather from One Call API
     return get_weather_by_coords(lat, lon)
-
+"""
