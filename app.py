@@ -48,7 +48,6 @@ if city:
     else:
         st.error("City not found. Please try again.")
 """
-
 import streamlit as st
 from weather_api import get_weather
 
@@ -56,29 +55,39 @@ st.set_page_config(page_title="Weather Dashboard", page_icon="🌦️", layout="
 
 st.title("🌤️ Daddy's Weather Monitoring Station")
 st.markdown("Get the latest weather updates for any city in the world.")
+st.markdown("### 📍 Enter a city to check its weather")
 
-# Dropdown list of preset cities
+# Preset cities for dropdown with keys as display names and values as city query strings
 preset_cities = {
-    "Cranbrook, UK": "Cranbrook,GB",
-    "Loughborough, UK": "Loughborough,GB",
-    "Fuengirola, Spain": "Fuengirola,ES",
-    "Bath, UK": "Bath,GB",
-    "Singapore": "Singapore,SG",
-    "Macclesfield, UK": "Macclesfield,GB",
+    "": None,
+    "Cranbrook, UK": "Cranbrook,UK",
+    "Loughborough, UK": "Loughborough,UK",
+    "Fuengirola, ES": "Fuengirola,ES",
+    "Bath, UK": "Bath,UK",
+    "Singapore": "Singapore",
+    "Macclesfield, UK": "Macclesfield,UK"
 }
 
-st.markdown("### 📍 Choose a city from the dropdown or type your own:")
+typed_city = st.text_input("Enter a city name (typing here clears dropdown):")
 
-selected_city = st.selectbox("Select a preset city:", options=[""] + list(preset_cities.keys()))
-typed_city = st.text_input("Or enter a city name (optionally with country code):")
-
-# Decide which city to use
-if selected_city:
-    city = preset_cities[selected_city]
-elif typed_city:
-    city = typed_city
+if typed_city.strip():
+    # When typing, reset dropdown to blank
+    selected_city = st.selectbox(
+        "Or choose a city from the list:",
+        options=list(preset_cities.keys()),
+        index=0,
+        key="dropdown"
+    )
+    city = typed_city.strip()
 else:
-    city = None
+    # When no typing, user can pick from dropdown
+    selected_city = st.selectbox(
+        "Or choose a city from the list:",
+        options=list(preset_cities.keys()),
+        index=0,
+        key="dropdown"
+    )
+    city = preset_cities.get(selected_city)
 
 def weather_icon(description):
     description = description.lower()
@@ -112,3 +121,4 @@ if city:
         st.write(f"🌇 **Sunset:** {weather['sunset']}")
     else:
         st.error("City not found. Please try again.")
+
