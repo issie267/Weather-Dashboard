@@ -1,4 +1,5 @@
 import requests
+from datetime import datetime
 
 API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your actual API key
 
@@ -16,6 +17,10 @@ def get_weather(city):
             "description": data["weather"][0]["description"],
             "humidity": data["main"]["humidity"],
             "wind_speed": data["wind"]["speed"],
+            "temp_min": data["main"]["temp_min"],
+            "temp_max": data["main"]["temp_max"],
+            "sunrise": datetime.fromtimestamp(data["sys"]["sunrise"]).strftime("%H:%M"),
+            "sunset": datetime.fromtimestamp(data["sys"]["sunset"]).strftime("%H:%M")
         }
     else:
         return None
