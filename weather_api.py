@@ -1,4 +1,4 @@
-
+"""
 import requests
 from datetime import datetime
 
@@ -26,44 +26,24 @@ def get_weather(city):
     else:
         return None
 """
-
 import requests
 from datetime import datetime
 
-API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your OpenWeatherMap API key
+API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your actual API key
 
-def get_weather(city):
-    # Add default country code if none given (change 'GB' if you want)
-    if "," not in city:
-        city_query = f"{city},GB"
-    else:
-        city_query = city
-
-    # Step 1: Geocode to get latitude and longitude
-    geocode_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_query}&limit=1&appid={API_KEY}"
-    geo_response = requests.get(geocode_url)
-    if geo_response.status_code != 200:
-        return None
-
-    geo_data = geo_response.json()
-    if not geo_data:
-        return None  # City not found
-
-    lat, lon = geo_data[0]['lat'], geo_data[0]['lon']
-
-    # Step 2: Get weather using One Call API
-    onecall_url = (
+def get_weather_by_coords(lat, lon):
+    url = (
         f"https://api.openweathermap.org/data/2.5/onecall"
         f"?lat={lat}&lon={lon}&exclude=minutely,hourly,alerts"
         f"&units=metric&appid={API_KEY}"
     )
-    weather_response = requests.get(onecall_url)
-    if weather_response.status_code != 200:
+    response = requests.get(url)
+    if response.status_code != 200:
         return None
 
-    weather_data = weather_response.json()
-    current = weather_data['current']
-    today = weather_data['daily'][0]
+    data = response.json()
+    current = data['current']
+    today = data['daily'][0]
 
     return {
         "temperature": current['temp'],
@@ -76,5 +56,26 @@ def get_weather(city):
         "sunrise": datetime.fromtimestamp(current['sunrise']).strftime('%H:%M'),
         "sunset": datetime.fromtimestamp(current['sunset']).strftime('%H:%M'),
     }
-    """
+
+def get_weather(city):
+    # Add default country code if none given (change 'GB' if needed)
+    if "," not in city:
+        city_query = f"{city},GB"
+    else:
+        city_query = city
+
+    # Step 1: Geocode city name to lat/lon
+    geocode_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city_query}&limit=1&appid={API_KEY}"
+    geo_response = requests.get(geocode_url)
+    if geo_response.status_code != 200:
+        return None
+
+    geo_data = geo_response.json()
+    if not geo_data:
+        return None  # City not found
+
+    lat, lon = geo_data[0]['lat'], geo_data[0]['lon']
+
+    # Step 2: Get weather from One Call API
+    return get_weather_by_coords(lat, lon)
 
