@@ -33,40 +33,60 @@ from datetime import datetime
 API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # replace with your OpenWeatherMap API key
 
 def get_weather(city):
-    # Step 1: Convert city name to coordinates
+    # Try geocoding API first to get lat/lon
     geocode_url = f"http://api.openweathermap.org/geo/1.0/direct?q={city}&limit=1&appid={API_KEY}"
     geo_response = requests.get(geocode_url)
 
-    if geo_response.status_code != 200 or not geo_response.json():
-        return None
+    if geo_response.status_code == 200 and geo_response.json():
+        geo_data = geo_response.json()[0]
+        lat, lon = geo_data['lat'], geo_data['lon']
 
-    geo_data = geo_response.json()[0]
-    lat, lon = geo_data['lat'], geo_data['lon']
+        # One Call API for detailed weather + daily forecast
+        onecall_url = (
+            f"https://api.openweathermap.org/data/2.5/onecall"
+            f"?lat={lat}&lon={lon}&exclude=minutely,hourly,alerts&units=metric&appid={API_KEY}"
+        )
+        weather_response = requests.get(onecall_url)
 
-    # Step 2: Get weather + daily forecast from One Call API
-    onecall_url = (
-        f"https://api.openweathermap.org/data/2.5/onecall"
-        f"?lat={lat}&lon={lon}&exclude=minutely,hourly,alerts&units=metric&appid={API_KEY}"
-    )
-    weather_response = requests.get(onecall_url)
+        if weather_response.status_code == 200:
+            weather_data = weather_response.json()
+            current = weather_data['current']
+            today = weather_data['daily'][0]
 
-    if weather_response.status_code != 200:
-        return None
+            return {
+                "temperature": current['temp'],
+                "feels_like": current['feels_like'],
+                "description": current['weather'][0]['description'],
+                "humidity": current['humidity'],
+                "wind_speed": current['wind_speed'],
+                "temp_min": today['temp']['min'],
+                "temp_max": today['temp']['max'],
+                "sunrise": datetime.fromtimestamp(current['sunrise']).strftime('%H:%M'),
+                "sunset": datetime.fromtimestamp(current['sunset']).strftime('%H:%M'),
+            }
 
-    weather_data = weather_response.json()
+    # If geocoding failed or One Call failed, fallback to old current weather API
+    fallback_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+    fallback_response = requests.get(fallback_url)
 
-    current = weather_data['current']
-    today = weather_data['daily'][0]  # today's forecast
+    if fallback_response.status_code == 200:
+        data = fallback_response.json()
+        main = data['main']
+        weather_desc = data['weather'][0]
 
-    return {
-        "temperature": current['temp'],
-        "feels_like": current['feels_like'],
-        "description": current['weather'][0]['description'],
-        "humidity": current['humidity'],
-        "wind_speed": current['wind_speed'],
-        "temp_min": today['temp']['min'],  # true daily min
-        "temp_max": today['temp']['max'],  # true daily max
-        "sunrise": datetime.fromtimestamp(current['sunrise']).strftime('%H:%M'),
-        "sunset": datetime.fromtimestamp(current['sunset']).strftime('%H:%M'),
-    }
+        return {
+            "temperature": main['temp'],
+            "feels_like": main['feels_like'],
+            "description": weather_desc['description'],
+            "humidity": main['humidity'],
+            "wind_speed": data['wind']['speed'],
+            "temp_min": main['temp_min'],
+            "temp_max": main['temp_max'],
+            "sunrise": datetime.fromtimestamp(data['sys']['sunrise']).strftime('%H:%M'),
+            "sunset": datetime.fromtimestamp(data['sys']['sunset']).strftime('%H:%M'),
+        }
+
+    # If both fail, return None
+    return None
+
 
