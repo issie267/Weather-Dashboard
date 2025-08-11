@@ -89,4 +89,4 @@ def get_weather(city):
     # If both fail, return None
     return None
 
-
+"""
