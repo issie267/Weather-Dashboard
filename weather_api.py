@@ -1,4 +1,4 @@
-"""
+
 import requests
 from datetime import datetime
 
@@ -76,4 +76,5 @@ def get_weather(city):
         "sunrise": datetime.fromtimestamp(current['sunrise']).strftime('%H:%M'),
         "sunset": datetime.fromtimestamp(current['sunset']).strftime('%H:%M'),
     }
+    """
 
