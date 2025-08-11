@@ -11,17 +11,40 @@ st.markdown("### 📍 Enter a city to check its weather")
 
 city = st.text_input("Enter a city name: (you may need to add country code eg UK!)")
 
+def weather_icon(description):
+    description=description.lower()
+    if "cloud" in description:
+        return "☁️"
+    elif "rain" in description:
+        return "🌧️"
+    elif "clear" in description:
+        return "☀️"
+    elif "snow" in description:
+        return "🌨️"
+    elif "storm" in description:
+        return "🌩️"
+    else:
+        return "🌡️"
+
 if city:
     weather = get_weather(city)
     
     if weather:
-        st.subheader(f"Weather in {city.title()}")
-        st.write(f"🌡️**Temperature:** {weather['temperature']}°C")
-        st.write(f"**Feels like:** {weather['feels_like']}°C")
+        st.subheader(f"Weather in {city.title()} {weather_icon(weather['description'])}")
+
+        
+                # Metrics in a row
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Temp", f"{weather['temperature']}°C", f"Feels {weather['feels_like']}°C")
+        col2.metric("Min Temp", f"{weather['temp_min']}°C")
+        col3.metric("Max Temp", f"{weather['temp_max']}°C")
+
         st.write(f"**Weather:** {weather['description'].title()}")
-        st.write(f"😅**Humidity:** {weather['humidity']}%")
-        st.write(f"**Wind Speed:** {weather['wind_speed']} m/s")
+        st.write(f"💧 **Humidity:** {weather['humidity']}%")
+        st.write(f"🌬️ **Wind Speed:** {weather['wind_speed']} m/s")
+        st.write(f"🌅 **Sunrise:** {weather['sunrise']}")
+        st.write(f"🌇 **Sunset:** {weather['sunset']}")
     else:
-        st.error("Could not fetch weather data. Please check the city name.")
-        st.success("Data loaded successfully!")  # After weather fetch
+        st.error("City not found. Please try again.")
+
 
