@@ -2,7 +2,7 @@
 import requests
 from datetime import datetime
 
-API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your actual API key
+API_KEY = ""  # Your actual API key
 
 def get_weather(city):
     url = (
@@ -29,7 +29,7 @@ def get_weather(city):
 import requests
 from datetime import datetime
 
-API_KEY = "30ef659613307c4974d4c6c3a036b90c"  # Your actual API key
+API_KEY = ""  # Your actual API key
 
 def get_weather_by_coords(lat, lon):
     url = (
